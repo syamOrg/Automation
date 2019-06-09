@@ -1,0 +1,16 @@
+input {
+#for testing only
+heartbeat {
+interval => 10
+type => "heartbeat"
+message => "epoch"
+}
+}
+output {
+stdout {
+codec => rubydebug
+}
+elasticsearch {
+hosts => [ "{{ ansible_default_ipv4.address }}:9200"] # Use the internal IP of your Elasticsearch server # for production
+}
+}

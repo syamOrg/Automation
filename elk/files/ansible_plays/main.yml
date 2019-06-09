@@ -1,0 +1,57 @@
+---
+ - hosts: all
+   gather_facts: yes
+   become: yes
+   vars:
+     - elk_services:
+        - elasticsearch
+        - kibana
+        - logstash 
+   tasks:
+
+   - name: Pause Play Book for userdata execution to be finished 
+     pause: 
+       minutes: 3
+ 
+   - name: Start elk services
+     service:
+        name: "{{ item }}"
+        state: started  
+        enabled: yes
+     loop: "{{ elk_services }}"
+
+   - name: Copy elasticsearch.yml into /etc/elasticsearch/elasticsearch.yml
+     template:
+        src: elasticsearch.yml.j2
+        dest: /etc/elasticsearch/elasticsearch.yml
+        owner: root
+        group: elasticsearch
+        mode: 0660
+        backup: yes
+
+   - name: Copy logstash config into /etc/logstash/conf.d/10-syslog.conf
+     template:
+        src: logstash.conf.j2
+        dest: /etc/logstash/conf.d/10-syslog.conf
+
+   - name: Copy kibana.yml into /etc/kibana/kibana.yml
+     template:
+        src: kibana.yml.j2
+        dest: /etc/kibana/kibana.yml
+        mode: 0644
+        backup: yes
+   
+   - name: Update rc.d for the services
+     command: "/usr/sbin/update-rc.d {{ item }}"
+     loop:
+       - 'elasticsearch defaults 95 10'
+     ignore_errors: yes
+
+   - name: ReStart elk services
+     service:
+        name: "{{ item }}"
+        state: restarted  
+     loop: "{{ elk_services }}"
+
+       #ansible all -i 34.231.168.166, --key-file=/home/nero/naveen.pem -u ubuntu -b -e "ansible_python_interpreter=/usr/bin/python3" -m ping 
+#127.0.0.1 ip-10-97-25-43

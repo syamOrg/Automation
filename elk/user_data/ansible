@@ -1,0 +1,10 @@
+
+sudo service elasticsearch restart
+sudo update-rc.d elasticsearch defaults 95 10
+
+sudo update-rc.d logstash defaults 97 8
+
+sudo service logstash start
+sudo service logstash restart
+
+sudo service kibana start

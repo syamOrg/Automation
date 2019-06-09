@@ -1,11 +1,9 @@
-
 variable "vpc_region" {}
 
 provider "aws" {
-  version    = "~> 2.0"
   region     = "${var.vpc_region}"
-  access_key = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-  secret_key = "XXXXXXXXXXXXXXXXXXXXXx"
+  // access_key = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  // secret_key = "XXXXXXXXXXXXXXXXXXXXXx"
 }
 
 module "test_vpc" {
@@ -52,4 +50,16 @@ resource "aws_eip" "vpc_nat" {
 resource "aws_nat_gateway" "vpc_ngw" {
   allocation_id = "${aws_eip.vpc_nat.id}"
   subnet_id     = "${element(module.test_subnets.public_subnet_ids,0)}"
+}
+
+output "vpc_id" {
+  value = "${module.test_vpc.vpc_id}"
+}
+
+output "public_subnet_ids" {
+  value = "${module.test_subnets.public_subnet_ids}"
+}
+
+output "private_subnet_ids" {
+  value = "${module.test_subnets.private_subnet_ids}"
 }

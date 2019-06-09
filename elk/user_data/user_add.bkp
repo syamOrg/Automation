@@ -1,0 +1,6 @@
+sudo adduser --disabled-password --gecos "" "${user_name}"
+sudo usermod -a -G sudo "${user_name}"
+sudo  mkdir "/home/${user_name}/.ssh"
+echo '"${user_publickey }"' | sudo tee -a "/home/${user_name}/.ssh/authorized_keys" > /dev/null
+sudo chown -R "${user_name}:${user_name}" "/home/${user_name}/.ssh"
+sudo chmod -R go-rx "/home/${user_name}/.ssh"

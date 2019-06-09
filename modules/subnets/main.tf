@@ -9,10 +9,10 @@ variable "vpc_private_subnets" {
 variable "vpc_subnet_az" {
   type = "list"
 }
+
 variable "aws_tags" {
   type = "map"
 }
-
 
 variable "vpc_id" {}
 
@@ -36,13 +36,13 @@ resource "aws_subnet" "subnet_private" {
 }
 
 resource "aws_route_table_association" "public_subnet_associate" {
-  count             = "${length(var.vpc_public_subnets)}"
+  count          = "${length(var.vpc_public_subnets)}"
   subnet_id      = "${element(aws_subnet.subnet_public.*.id,count.index)}"
   route_table_id = "${var.public_routetable_id}"
 }
 
 resource "aws_route_table_association" "private_subnet_associate" {
-  count             = "${length(var.vpc_private_subnets)}"
+  count          = "${length(var.vpc_private_subnets)}"
   subnet_id      = "${element(aws_subnet.subnet_private.*.id,count.index)}"
   route_table_id = "${var.private_routetable_id}"
 }
