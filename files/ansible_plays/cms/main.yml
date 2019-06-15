@@ -1,0 +1,70 @@
+---
+  - hosts: all
+    become: yes
+    tasks:   
+    - name: Wait for port 22 to be available
+      wait_for_connection:
+         delay: 30
+         timeout: 300
+
+    - name: Gather Facts
+      setup:
+             
+    - name: Create group tomcat
+      group:
+         name: tomcat
+         state: present
+    
+    - name: Add user Tomcat 
+      user:
+        name: tomcat
+        group: tomcat
+        state: present
+        move_home: yes
+        create_home: yes
+        home: /opt/tomcat
+        shell: /bin/nologin 
+
+    - name: Download Tomcat
+      unarchive:
+        dest: /opt/tomcat
+        group: tomcat
+        owner: tomcat
+        remote_src: yes
+        src: "{{ tomcat_url }}" 
+        extra_opts:
+           - '--strip-components=1' 
+   
+    - name: Set java memory setting min/max 
+      lineinfile:
+         create: yes
+         backup: yes 
+         group: tomcat
+         owner: tomcat
+         line: 'JAVA_OPTS="-Djava.awt.headless=true -Xms2048M -Xmx4096M"'
+         state: present
+         path: /opt/tomcat/bin/setenv.sh
+         mode: 0750
+
+    - name: Create /etc/systemd/system/tomcat.service
+      template:
+        src: "/mnt/c/Users/mnave/Desktop/sam/files/templates/tomcat.service.tpl"
+        dest: /etc/systemd/system/tomcat.service
+
+    - name: Reload Daemon      
+      systemd:
+          daemon_reload: yes
+
+    - name: Start the tomcat app
+      service:
+        name: tomcat
+        state: started
+        enabled: yes
+
+    - name: Dowload jar file into tomcat path
+      get_url:
+        url: https://elasticbeanstalk-us-east-1-475534801476.s3.amazonaws.com/sample.war
+        dest: /opt/tomcat/webapps/
+        group: tomcat
+        owner: tomcat
+      
