@@ -16,6 +16,7 @@ resource "aws_key_pair" "aws_auth" {
   key_name   = "${var.aws_default_user}"
   public_key = "${file(format("./../files/userkeys/%s_rsa.pub",var.aws_default_user))}"
 }
+
 resource "aws_security_group" "cms_agg_sg" {
   name        = "cms_app_sg"
   description = "cms application security group"
@@ -23,81 +24,85 @@ resource "aws_security_group" "cms_agg_sg" {
 }
 
 resource "aws_security_group_rule" "ingress_1" {
-  type            = "ingress"
-  from_port       = 22
-  to_port         = 22
-  protocol        = "tcp"
-  cidr_blocks = ["${concat(data.aws_subnet.privatecidrs.*.cidr_block,data.aws_subnet.publiccidrs.*.cidr_block)}"]
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["${concat(data.aws_subnet.privatecidrs.*.cidr_block,data.aws_subnet.publiccidrs.*.cidr_block)}"]
   security_group_id = "${aws_security_group.cms_agg_sg.id}"
 }
 
 resource "aws_security_group_rule" "ingress_2" {
-  type            = "ingress"
-  from_port       = 8080
-  to_port         = 8080
-  protocol        = "tcp"
-  cidr_blocks = ["${concat(data.aws_subnet.privatecidrs.*.cidr_block,data.aws_subnet.publiccidrs.*.cidr_block)}"]
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  cidr_blocks       = ["${concat(data.aws_subnet.privatecidrs.*.cidr_block,data.aws_subnet.publiccidrs.*.cidr_block)}"]
   security_group_id = "${aws_security_group.cms_agg_sg.id}"
 }
 
 resource "aws_security_group_rule" "ingress_3" {
-  type            = "ingress"
-  from_port       = 22
-  to_port         = 22
-  protocol        = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.cms_agg_sg.id}"
 }
+
 resource "aws_security_group_rule" "ingress_4" {
-  type            = "ingress"
-  from_port       = 8080
-  to_port         = 8080
-  protocol        = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.cms_agg_sg.id}"
 }
 
 resource "aws_security_group_rule" "egress_1" {
-  type            = "egress"
-  from_port       = 443
-  to_port         = 443
-  protocol        = "tcp"
-  cidr_blocks = ["${concat(data.aws_subnet.privatecidrs.*.cidr_block,data.aws_subnet.publiccidrs.*.cidr_block)}"]
+  type              = "egress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["${concat(data.aws_subnet.privatecidrs.*.cidr_block,data.aws_subnet.publiccidrs.*.cidr_block)}"]
   security_group_id = "${aws_security_group.cms_agg_sg.id}"
 }
+
 resource "aws_security_group_rule" "egress_2" {
-  type            = "egress"
-  from_port       = 80
-  to_port         = 80
-  protocol        = "tcp"
-  cidr_blocks = ["${concat(data.aws_subnet.privatecidrs.*.cidr_block,data.aws_subnet.publiccidrs.*.cidr_block)}"]
+  type              = "egress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["${concat(data.aws_subnet.privatecidrs.*.cidr_block,data.aws_subnet.publiccidrs.*.cidr_block)}"]
   security_group_id = "${aws_security_group.cms_agg_sg.id}"
 }
+
 resource "aws_security_group_rule" "egress_3" {
-  type            = "egress"
-  from_port       = 443
-  to_port         = 443
-  protocol        = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  type              = "egress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.cms_agg_sg.id}"
 }
+
 resource "aws_security_group_rule" "egress_4" {
-  type            = "egress"
-  from_port       = 80
-  to_port         = 80
-  protocol        = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  type              = "egress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.cms_agg_sg.id}"
 }
 
 data "template_file" "install_cms" {
   template = "${(file("./../files/templates/init_cms.tpl"))}"
-  count      = "${length(var.aws_instance_hostnames)}"
+  count    = "${length(var.aws_instance_hostnames)}"
 
   vars {
-    elk_useradd = "${join("\n",data.template_file.add_users.*.rendered)}"
+    elk_useradd       = "${join("\n",data.template_file.add_users.*.rendered)}"
     instance_hostname = "${element(var.aws_instance_hostnames,count.index)}"
-    tomcat_url = "${var.tomcat_url}"
+    tomcat_url        = "${var.tomcat_url}"
   }
 }
 
@@ -128,7 +133,7 @@ locals {
 }
 
 resource "aws_instance" "awsinstances" {
-  count      = "${length(var.aws_instance_hostnames)}"
+  count           = "${length(var.aws_instance_hostnames)}"
   ami             = "${lookup(var.aws_amis, var.aws_region)}"
   instance_type   = "${var.aws_instance_type}"
   key_name        = "${aws_key_pair.aws_auth.key_name}"
@@ -156,9 +161,9 @@ resource "null_resource" "configuration" {
   triggers = {
     trigger_a = "${sha1(file("../files/ansible_plays/cms/main.yml"))}"
   }
+
   provisioner "local-exec" {
     command = "ansible-playbook -i ${local.cms_publicips}, ../files/ansible_plays/cms/main.yml -e tomcat_url=${var.tomcat_url} -e ansible_python_interpreter=/usr/bin/python -e app_env=${var.app_env}"
-
 
     environment = {
       ANSIBLE_HOST_KEY_CHECKING   = "False"
@@ -170,4 +175,3 @@ resource "null_resource" "configuration" {
     }
   }
 }
-

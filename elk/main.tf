@@ -108,6 +108,7 @@ resource "null_resource" "configuration" {
     trigger_c = "${sha1(file("files/ansible_plays/templates/logstash.conf.j2"))}"
     trigger_d = "${sha1(file("files/ansible_plays/templates/kibana.yml.j2"))}"
   }
+
   provisioner "local-exec" {
     command = "ansible-playbook -i ${local.elk_publicips}, files/ansible_plays/main.yml -e elasticsearch_cluster=${var.elasticsearch_cluster} -e ansible_python_interpreter=/usr/bin/python3"
 

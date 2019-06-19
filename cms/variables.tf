@@ -9,7 +9,7 @@ variable "aws_amis" {
   }
 }
 
-variable "aws_instance_hostnames"{
+variable "aws_instance_hostnames" {
   type = "list"
 }
 
@@ -31,6 +31,8 @@ variable "aws_instancetags" {
   type = "map"
 }
 
-variable "tomcat_url"{}
+variable "tomcat_url" {}
 
-variable "app_env" { description = "Environment of the app" }
+variable "app_env" {
+  description = "Environment of the app"
+}

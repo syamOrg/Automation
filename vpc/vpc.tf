@@ -1,9 +1,7 @@
 variable "vpc_region" {}
 
 provider "aws" {
-  region     = "${var.vpc_region}"
-  // access_key = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-  // secret_key = "XXXXXXXXXXXXXXXXXXXXXx"
+  region = "${var.vpc_region}"
 }
 
 module "test_vpc" {

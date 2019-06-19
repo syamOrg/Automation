@@ -25,6 +25,10 @@ resource "aws_subnet" "subnet_public" {
   cidr_block        = "${element(var.vpc_public_subnets,count.index)}"
   availability_zone = "${element(var.vpc_subnet_az,count.index)}"
   tags              = "${merge(var.aws_tags,map("network","public"))}"
+
+  lifecycle {
+    ignore_changes = ["tags"]
+  }
 }
 
 resource "aws_subnet" "subnet_private" {
@@ -33,6 +37,10 @@ resource "aws_subnet" "subnet_private" {
   cidr_block        = "${element(var.vpc_private_subnets,count.index)}"
   availability_zone = "${element(var.vpc_subnet_az,count.index)}"
   tags              = "${merge(var.aws_tags,map("network","private"))}"
+
+  lifecycle {
+    ignore_changes = ["tags"]
+  }
 }
 
 resource "aws_route_table_association" "public_subnet_associate" {
