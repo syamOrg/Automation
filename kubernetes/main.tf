@@ -12,6 +12,10 @@ data "terraform_remote_state" "backend_vpc" {
   }
 }
 
+data "aws_vpc" "kubernetesvpc" {
+  id =  "${data.terraform_remote_state.backend_vpc.vpc_id}"
+}
+
 locals {
   private_subnetids = "${join(" ",data.terraform_remote_state.backend_vpc.private_subnet_ids)}"
   public_subnetids  = "${join(" ",data.terraform_remote_state.backend_vpc.public_subnet_ids)}"
@@ -56,19 +60,8 @@ resource "aws_s3_bucket" "kops_state" {
   }
 }
 
-data "template_file" "kopsyaml_template" {
-  template = "${(file("./../files/templates/kops.yaml.tpl"))}"
 
-  vars {
-  }
-}
-
-resource "local_file" "kopsyaml_renderted" {
-    content     = "${data.template_file.kopsyaml_template.rendered}"
-    filename = "kops.yaml"
-}
-
-resource "aws_security_group" "kops_agg_sg" {
+resource "aws_security_group" "kops_app_sg" {
   name        = "kops_app_sg"
   description = "kops application security group"
   vpc_id      = "${data.terraform_remote_state.backend_vpc.vpc_id}"
@@ -80,7 +73,7 @@ resource "aws_security_group_rule" "ingress_1" {
   to_port           = 22
   protocol          = "tcp"
   cidr_blocks       = ["${concat(data.aws_subnet.privatecidrs.*.cidr_block,data.aws_subnet.publiccidrs.*.cidr_block)}"]
-  security_group_id = "${aws_security_group.kops_agg_sg.id}"
+  security_group_id = "${aws_security_group.kops_app_sg.id}"
 }
 
 resource "aws_security_group_rule" "ingress_2" {
@@ -89,7 +82,7 @@ resource "aws_security_group_rule" "ingress_2" {
   to_port           = 80
   protocol          = "tcp"
   cidr_blocks       = ["${concat(data.aws_subnet.privatecidrs.*.cidr_block,data.aws_subnet.publiccidrs.*.cidr_block)}"]
-  security_group_id = "${aws_security_group.kops_agg_sg.id}"
+  security_group_id = "${aws_security_group.kops_app_sg.id}"
 }
 
 resource "aws_security_group_rule" "ingress_3" {
@@ -98,7 +91,7 @@ resource "aws_security_group_rule" "ingress_3" {
   to_port           = 22
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = "${aws_security_group.kops_agg_sg.id}"
+  security_group_id = "${aws_security_group.kops_app_sg.id}"
 }
 
 resource "aws_security_group_rule" "ingress_4" {
@@ -107,7 +100,7 @@ resource "aws_security_group_rule" "ingress_4" {
   to_port           = 80
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = "${aws_security_group.kops_agg_sg.id}"
+  security_group_id = "${aws_security_group.kops_app_sg.id}"
 }
 
 resource "aws_security_group_rule" "ingress_5" {
@@ -116,7 +109,7 @@ resource "aws_security_group_rule" "ingress_5" {
   to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = "${aws_security_group.kops_agg_sg.id}"
+  security_group_id = "${aws_security_group.kops_app_sg.id}"
 }
 
 resource "aws_security_group_rule" "ingress_6" {
@@ -125,7 +118,7 @@ resource "aws_security_group_rule" "ingress_6" {
   to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = ["${concat(data.aws_subnet.privatecidrs.*.cidr_block,data.aws_subnet.publiccidrs.*.cidr_block)}"]
-  security_group_id = "${aws_security_group.kops_agg_sg.id}"
+  security_group_id = "${aws_security_group.kops_app_sg.id}"
 }
 
 resource "aws_security_group_rule" "ingress_7" {
@@ -133,7 +126,7 @@ resource "aws_security_group_rule" "ingress_7" {
   protocol                 = "tcp"
   from_port         = 0
   to_port           = 0
-  security_group_id        = "${aws_security_group.kops_agg_sg.id}"
+  security_group_id        = "${aws_security_group.kops_app_sg.id}"
   self = "true"
 }
 
@@ -143,7 +136,7 @@ resource "aws_security_group_rule" "egress_1" {
   to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = ["${concat(data.aws_subnet.privatecidrs.*.cidr_block,data.aws_subnet.publiccidrs.*.cidr_block)}"]
-  security_group_id = "${aws_security_group.kops_agg_sg.id}"
+  security_group_id = "${aws_security_group.kops_app_sg.id}"
 }
 
 resource "aws_security_group_rule" "egress_2" {
@@ -152,7 +145,7 @@ resource "aws_security_group_rule" "egress_2" {
   to_port           = 80
   protocol          = "tcp"
   cidr_blocks       = ["${concat(data.aws_subnet.privatecidrs.*.cidr_block,data.aws_subnet.publiccidrs.*.cidr_block)}"]
-  security_group_id = "${aws_security_group.kops_agg_sg.id}"
+  security_group_id = "${aws_security_group.kops_app_sg.id}"
 }
 
 resource "aws_security_group_rule" "egress_3" {
@@ -161,7 +154,7 @@ resource "aws_security_group_rule" "egress_3" {
   to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = "${aws_security_group.kops_agg_sg.id}"
+  security_group_id = "${aws_security_group.kops_app_sg.id}"
 }
 
 resource "aws_security_group_rule" "egress_4" {
@@ -170,7 +163,7 @@ resource "aws_security_group_rule" "egress_4" {
   to_port           = 80
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = "${aws_security_group.kops_agg_sg.id}"
+  security_group_id = "${aws_security_group.kops_app_sg.id}"
 }
 
 resource "aws_security_group_rule" "egress_5" {
@@ -178,9 +171,53 @@ resource "aws_security_group_rule" "egress_5" {
   protocol                 = "tcp"
   from_port         = 0
   to_port           = 0
-  security_group_id        = "${aws_security_group.kops_agg_sg.id}"
+  security_group_id        = "${aws_security_group.kops_app_sg.id}"
   self = "true"
   }
+
+resource "aws_security_group" "kops_elb_sg" {
+  name        = "kops_elb_sg"
+  description = "kops elb security group"
+  vpc_id      = "${data.terraform_remote_state.backend_vpc.vpc_id}"
+}
+
+resource "aws_security_group_rule" "elb_ingress_1" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = "${aws_security_group.kops_elb_sg.id}"
+}
+
+resource "aws_security_group_rule" "elb_ingress_2" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = "${aws_security_group.kops_elb_sg.id}"
+}
+
+
+resource "aws_security_group_rule" "elb_egress_1" {
+  type              = "egress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  security_group_id = "${aws_security_group.kops_elb_sg.id}"
+ source_security_group_id = "${aws_security_group.kops_app_sg.id}"
+
+}
+resource "aws_security_group_rule" "elb_egress_2" {
+  type              = "egress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  security_group_id = "${aws_security_group.kops_elb_sg.id}"
+ source_security_group_id = "${aws_security_group.kops_app_sg.id}"
+
+}
 
 #https://kubernetes.io/docs/setup/production-environment/tools/kops/
 #https://www.terraform.io/docs/providers/aws/r/route53_zone.html

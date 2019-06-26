@@ -61,3 +61,15 @@ output "public_subnet_ids" {
 output "private_subnet_ids" {
   value = "${module.test_subnets.private_subnet_ids}"
 }
+
+output "public_routetable_ids" {
+  value = "${module.test_vpc.public_routetable_id}"
+}
+
+output "private_routetable_ids" {
+  value = "${module.test_vpc.private_routetable_id}"
+}
+
+output "vpc_natgw_id" {
+  value = "${aws_nat_gateway.vpc_ngw.id}"
+}
