@@ -22,8 +22,8 @@ module "test_subnets" {
   }
 
   vpc_public_subnets    = ["10.97.25.0/26", "10.97.25.64/26"]
-  vpc_private_subnets   = ["10.97.25.128/26", "10.97.25.192/26"]
-  vpc_subnet_az         = ["us-east-1a", "us-east-1b"]
+  vpc_private_subnets   = ["10.97.25.128/26", "10.97.25.192/26","10.97.26.192/26"]
+  vpc_subnet_az         = ["us-east-1a", "us-east-1b","us-east-1c"]
   vpc_id                = "${module.test_vpc.vpc_id}"
   private_routetable_id = "${module.test_vpc.private_routetable_id}"
   public_routetable_id  = "${module.test_vpc.public_routetable_id}"

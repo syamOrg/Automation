@@ -1,0 +1,111 @@
+apiVersion: kops/v1alpha2
+kind: Cluster
+metadata:
+  name: kopsdev.com
+spec:
+  api:
+    dns: {}
+    loadBalancer:
+      additionalSecurityGroups:
+      - sg-0966af342ac8c314a
+      type: Internal
+  authorization:
+    rbac: {}
+  channel: stable
+  cloudProvider: aws
+  configBase: s3://kopsstate123445/kopsdev.com
+  etcdClusters:
+  - etcdMembers:
+    - instanceGroup: master-us-east-1a
+      name: a
+    - instanceGroup: master-us-east-1b
+      name: b
+    - instanceGroup: master-us-east-1c
+      name: c
+    name: main
+  - etcdMembers:
+    - instanceGroup: master-us-east-1a
+      name: a
+    - instanceGroup: master-us-east-1b
+      name: b
+    - instanceGroup: master-us-east-1c
+      name: c
+    name: events
+  iam:
+    allowContainerRegistry: true
+    legacy: false
+  kubeDNS:
+    provider: CoreDNS
+  kubernetesVersion: 1.10.6
+  masterInternalName: api.internal.kopsdev.com
+  networkCIDR: 10.97.0.0/16
+  networkID: vpc-03f0436504394c2c0
+  networking:
+    weave:
+      mtu: 8912
+  nonMasqueradeCIDR: 100.64.0.0/10
+  subnets:
+  - egress: nat-02ce9938147b1d5e5
+    id: subnet-0f711fd7d88a4c644
+    name: us-east-1a
+    type: Private
+    zone: us-east-1a
+  - egress: nat-02ce9938147b1d5e5
+    id: subnet-0d74f4520bb207639
+    name: us-east-1b
+    type: Private
+    zone: us-east-1b
+  - egress: nat-02ce9938147b1d5e5
+    id: subnet-0117a15bc1c5e34a9
+    name: us-east-1c
+    type: Private
+    zone: us-east-1c
+  topology:
+    dns:
+      type: Private
+    masters: private
+    nodes: private
+---
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: kopsdev.com
+  name: master
+spec:
+  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  kubernetesVersion: 1.10.6
+  machineType: t2.medium
+  maxSize: 1
+  minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master
+  role: Master
+  rootVolumeSize: 100
+  rootVolumeType: gp2
+  subnets:
+  - us-east-1a
+  - us-east-1b
+  - us-east-1c
+---
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: kopsdev.com
+  name: nodes
+spec:
+  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  kubernetesVersion: 1.10.6
+  machineType: t2.medium
+  maxSize: 2
+  minSize: 2
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes
+  role: Node
+  rootVolumeSize: 100
+  rootVolumeType: gp2
+  subnets:
+  - us-east-1a
+  - us-east-1b
+  - us-east-1c

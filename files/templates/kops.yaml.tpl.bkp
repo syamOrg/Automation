@@ -71,7 +71,7 @@ spec:
   nodeLabels:
     kops.k8s.io/instancegroup: master
   role: Master
-  subnets:
+  subnets:  subnets:
 {{range $i, $az := .availability_zones.value}}
   - {{.}}
   {{end}}

@@ -31,7 +31,7 @@ output "kubernetes_security_group_id" {
 }
 
 output "nat_gateway_ids" {
-  value = ["${data.terraform_remote_state.backend_vpc.vpc_natgw_id}"]
+  value = "${data.terraform_remote_state.backend_vpc.vpc_natgw_id}"
 }
 
 output "availability_zones" {
