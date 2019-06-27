@@ -49,7 +49,7 @@ spec:
 {{end}}
   topology:
     dns:
-      type: private
+      type: Private
     masters: private
     nodes: private
 ---
