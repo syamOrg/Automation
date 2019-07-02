@@ -76,5 +76,9 @@ output "kubernetes_workernode_image"{
 }
 
 
+output "kubernetes_adminpubkey"{
+  value = "${file("../files/userkeys/kubernetes_rsa.pub")}"
+}
+
 #https://godoc.org/k8s.io/kops/pkg/apis/kops
 #https://github.com/kubernetes/kops/blob/master/docs/cluster_spec.md

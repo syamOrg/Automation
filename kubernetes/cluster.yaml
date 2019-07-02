@@ -7,7 +7,7 @@ spec:
     dns: {}
     loadBalancer:
       additionalSecurityGroups:
-      - sg-0966af342ac8c314a
+      - sg-036249b71e8f310c8
       type: Internal
   authorization:
     rbac: {}
@@ -39,24 +39,24 @@ spec:
   kubernetesVersion: 1.10.6
   masterInternalName: api.internal.kopsdev.com
   networkCIDR: 10.97.0.0/16
-  networkID: vpc-03f0436504394c2c0
+  networkID: vpc-0432f43bd45d90eae
   networking:
     weave:
       mtu: 8912
   nonMasqueradeCIDR: 100.64.0.0/10
   subnets:
-  - egress: nat-02ce9938147b1d5e5
-    id: subnet-0f711fd7d88a4c644
+  - egress: nat-0b0f84df742c66e86
+    id: subnet-02787dee485637040
     name: us-east-1a
     type: Private
     zone: us-east-1a
-  - egress: nat-02ce9938147b1d5e5
-    id: subnet-0d74f4520bb207639
+  - egress: nat-0b0f84df742c66e86
+    id: subnet-087096f32bc2bd953
     name: us-east-1b
     type: Private
     zone: us-east-1b
-  - egress: nat-02ce9938147b1d5e5
-    id: subnet-0117a15bc1c5e34a9
+  - egress: nat-0b0f84df742c66e86
+    id: subnet-0518ab8ff72858f03
     name: us-east-1c
     type: Private
     zone: us-east-1c
@@ -71,7 +71,7 @@ kind: InstanceGroup
 metadata:
   labels:
     kops.k8s.io/cluster: kopsdev.com
-  name: master
+  name: master-us-east-1a
 spec:
   image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
   kubernetesVersion: 1.10.6
@@ -79,13 +79,51 @@ spec:
   maxSize: 1
   minSize: 1
   nodeLabels:
-    kops.k8s.io/instancegroup: master
+    kops.k8s.io/instancegroup: master-us-east-1a
   role: Master
   rootVolumeSize: 100
   rootVolumeType: gp2
   subnets:
   - us-east-1a
+---
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: kopsdev.com
+  name: master-us-east-1b
+spec:
+  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  kubernetesVersion: 1.10.6
+  machineType: t2.medium
+  maxSize: 1
+  minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-us-east-1b
+  role: Master
+  rootVolumeSize: 100
+  rootVolumeType: gp2
+  subnets:
   - us-east-1b
+---
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: kopsdev.com
+  name: master-us-east-1c
+spec:
+  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  kubernetesVersion: 1.10.6
+  machineType: t2.medium
+  maxSize: 1
+  minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-us-east-1c
+  role: Master
+  rootVolumeSize: 100
+  rootVolumeType: gp2
+  subnets:
   - us-east-1c
 ---
 apiVersion: kops/v1alpha2
@@ -109,3 +147,12 @@ spec:
   - us-east-1a
   - us-east-1b
   - us-east-1c
+---
+apiVersion: kops/v1alpha2
+kind: SSHCredential
+metadata:
+  labels:
+    kops.k8s.io/cluster: kopsdev.com
+spec:
+  publicKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDbzsBDObq34ajLRD4pOop0ffJA57+LhKRD2aB8dZ14cWcTClju4KKUMlhGgC9bP8Rh37HF/7TCiShuzxo8Xt8IPhnsJUCH8wWKRpfSQR/k7SxRdZl8+3NY3pEXU4KfmSmH9pybRlEW4tFa5nNf9mHp/c3Bh/YjMaYhC6L170vfhm6xdK/n/Jo/XuJ3zXRWEDtCcV3ho0tghzVKQJ/2hTT9Ti0++0fqu+Gty4m6RBN3naQSk9wQweAvYqbBE7ELXJFGKsi4s5lPYKf+Mu5R+VB8mrr5S5BNGxhSsIi8KQDaKxUZtpAKlmMyycZ7kVH0dUPEKj7TJA7R1hJFeUcsn2v3
+    nero@DESKTOP-DUUU61M '

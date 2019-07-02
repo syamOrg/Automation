@@ -4,6 +4,7 @@
 kops_cluster.yaml.tpl for cluster template
 kops_master.yaml.tpl for master template
 kops_nodes.yaml.tpl for worker template
+kops_adminkey.yaml.tpl for cluster admin key template
 
 
 ```
@@ -12,12 +13,15 @@ kops_nodes.yaml.tpl for worker template
 ### Shell Commands to create Kubernetes Cluster yaml
 
 ```
+
 TF_OUTPUT=$(terraform output -json)
 kops toolbox --v=4 template --name ${CLUSTER_NAME} --values <( echo ${TF_OUTPUT}) --template ../files/templates/kops_templates/ --format-yaml > cluster.yaml
-KOPS_STATE_STORE="s3://$(echo ${TF_OUTPUT} | jq -r .kops_s3_bucket_name.value)"
-CLUSTER_NAME="$(echo ${TF_OUTPUT} | jq -r .kubernetes_clustername.value)"
+export KOPS_STATE_STORE="s3://$(echo ${TF_OUTPUT} | jq -r .kops_s3_bucket_name.value)"
+export CLUSTER_NAME="$(echo ${TF_OUTPUT} | jq -r .kubernetes_clustername.value)"
 kops create -f cluster.yaml -v=5
+kops edit cluster kopsdev.com
 kops update cluster kopsdev.com --yes
+
 
 ```
 
