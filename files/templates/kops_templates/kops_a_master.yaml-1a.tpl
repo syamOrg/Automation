@@ -5,7 +5,10 @@ metadata:
     kops.k8s.io/cluster: {{$.kubernetes_clustername.value}}
   name: master-us-east-1a
 spec:
+  securityGroupOverride: {{ $.kubernetes_security_group_id.value }}
   image: {{ $.kubernetes_masternode_image.value}}
+  iam: 
+    profile: {{ $.kubernetes_master_ip_arn.value }}
   kubernetesVersion: 1.10.6
   machineType: {{ $.kubernetes_masternode_type.value}}
   rootVolumeSize: 100

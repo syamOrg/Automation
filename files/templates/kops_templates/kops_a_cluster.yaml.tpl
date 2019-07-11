@@ -8,8 +8,8 @@ spec:
   api:
     dns: {}
     loadBalancer:
+      securityGroupOverride: {{.kubernetes_elbsecuritygroup.value}}
       type: Internal
-      additionalSecurityGroups: ["{{.kubernetes_elbsecuritygroup.value}}"]
   authorization:
     rbac: {}
   channel: stable
@@ -28,9 +28,6 @@ spec:
       name: {{. | replace $.region.value "" }} {{/* converts eu-west-1a to a */}}
   {{end}}
     name: events
-  iam:
-    allowContainerRegistry: true
-    legacy: false
   kubernetesVersion: 1.10.6
   masterInternalName: api.internal.{{ .kubernetes_clustername.value }}
   networkCIDR: {{.vpc_cidr_block.value}}

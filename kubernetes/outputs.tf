@@ -19,7 +19,7 @@ output "public_route_table_ids" {
 }
 
 output "private_subnet_ids" {
-  value =  "${data.terraform_remote_state.backend_vpc.private_subnet_ids}"
+  value = "${data.terraform_remote_state.backend_vpc.private_subnet_ids}"
 }
 
 output "private_route_table_ids" {
@@ -46,39 +46,48 @@ output "kubernetes_clustername" {
   value = "${var.kubernetes_clustername}"
 }
 
-output "kubernetes_elbsecuritygroup"{
+output "kubernetes_elbsecuritygroup" {
   value = "${aws_security_group.kops_elb_sg.id}"
 }
 
-output "kubernetes_masternode_type"{
+output "kubernetes_masternode_type" {
   value = "${var.kubernetes_masternode_type}"
 }
 
-output "kubernetes_workernode_type"{
+output "kubernetes_workernode_type" {
   value = "${var.kubernetes_workernode_type}"
 }
 
 # etcd count is defaulted to master count
-output "kubernetes_masternode_count"{
+output "kubernetes_masternode_count" {
   value = "${var.kubernetes_masternode_count}"
 }
 
-output "kubernetes_workernode_count"{
+output "kubernetes_workernode_count" {
   value = "${var.kubernetes_workernode_count}"
 }
 
-output "kubernetes_masternode_image"{
+output "kubernetes_masternode_image" {
   value = "${var.kubernetes_masternode_image}"
 }
 
-output "kubernetes_workernode_image"{
+output "kubernetes_workernode_image" {
   value = "${var.kubernetes_workernode_image}"
 }
 
-
-output "kubernetes_adminpubkey"{
+output "kubernetes_adminpubkey" {
   value = "${file("../files/userkeys/kubernetes_rsa.pub")}"
+}
+
+
+output "kubernetes_master_ip_arn"{
+  value = "${aws_iam_instance_profile.kubernetes_master_ip.arn}"
+}
+
+output "kubernetes_node_ip_arn"{
+  value = "${aws_iam_instance_profile.kubernetes_node_ip.arn}"
 }
 
 #https://godoc.org/k8s.io/kops/pkg/apis/kops
 #https://github.com/kubernetes/kops/blob/master/docs/cluster_spec.md
+

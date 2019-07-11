@@ -5,6 +5,9 @@ metadata:
     kops.k8s.io/cluster: {{.kubernetes_clustername.value}}
   name: nodes
 spec:
+  securityGroupOverride: {{ .kubernetes_security_group_id.value }}
+  iam: 
+    profile: {{ $.kubernetes_node_ip_arn.value}}
   image: {{ .kubernetes_workernode_image.value}}
   kubernetesVersion: 1.10.6
   machineType: {{.kubernetes_workernode_type.value}}

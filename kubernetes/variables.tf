@@ -6,3 +6,5 @@ variable "kubernetes_masternode_count" {}
 variable "kubernetes_workernode_count" {}
 variable "kubernetes_masternode_image" {}
 variable "kubernetes_workernode_image" {}
+variable "kubernetes_master_iam_role_name" {}
+variable "kubernetes_node_iam_role_name" {}
