@@ -1,0 +1,11 @@
+variable "ami" {}
+variable "region" {}
+variable "zookeeper_instance_type" {}
+variable "kafka_instance_type" {}
+variable "project" {}
+variable "route53_hosted_zone_name" {}
+variable "kafka_cluster_size_min" {}
+variable "kafka_cluster_size_max" {}
+variable "zookeeper_cluster_size" {}
+variable "kafka_iam_role_prefix" {}
+variable "aws_default_user" {}
